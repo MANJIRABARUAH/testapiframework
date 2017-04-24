@@ -11,8 +11,8 @@ public class TestDataProvider {
 
     @DataProvider
     static Object[][] dataProvider() throws IOException {
-        new DataReader().readCompleteExcel();
-        String[][] result = new DataReader().readExcel(0);
+        //String[][] result = new DataReader().readExcel(0);
+        String[][] result = new DataReader().readCompleteExcel();
         final int noOfRows = DataReader.rowSize;
         final int noOfColumns = DataReader.columnSize;
         Object[][] copy = new Object[noOfRows][noOfColumns];
