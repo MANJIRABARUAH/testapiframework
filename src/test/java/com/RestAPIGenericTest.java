@@ -5,9 +5,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.simple.parser.ParseException;
+import org.testng.ITestContext;
 import org.testng.Reporter;
 import org.testng.SkipException;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,18 +24,12 @@ public class RestAPIGenericTest extends RestAPIAbstractTest {
 
     private static final Log LOG = LogFactory.getLog(RestAPIGenericTest.class);
 
-
-    @BeforeClass
-    public static void setUp() throws IOException {
-
-    }
-
-
     @BeforeMethod
     public void setUpTest() {
         httpClient = HttpClientBuilder.create().build();
     }
 
+    @UseAsTestName()
     @Test(
             dataProvider = "dataProvider",
             dataProviderClass = TestDataProvider.class
@@ -44,7 +42,8 @@ public class RestAPIGenericTest extends RestAPIAbstractTest {
                                       String expectedResponseCode,
                                       String expectedJSONFileName,
                                       String execute,
-                                      String testDescription) {
+                                      String testDescription,
+                                      ITestContext ctx) {
         super.testScriptName = testScriptName;
         super.methodType = methodType;
         super.parametrisedURL = parametrisedURL;
@@ -54,13 +53,13 @@ public class RestAPIGenericTest extends RestAPIAbstractTest {
         super.headerJSONFileName = PropertyFileReader.HEADERJSON + headerJSONFileName;
         super.inputJSONFileName = PropertyFileReader.INPUTJSON + inputJSONFileName;
         super.expectedJSONFileName = PropertyFileReader.RESULTJSON + expectedJSONFileName;
-
+        ctx.setAttribute("testName", "MyTestName");
         Reporter.log(testScriptName + " :- " + testDescription);
         try {
             executionCheck();
             if (isGet()) testHttpClient_GET();
             else if (isPost()) testHttpClient_POST();
-            else if (isDelete()) testHttpClient_DELETE();
+            //else if (isDelete()) testHttpClient_DELETE();
 
         } catch (Exception ex) {
             LOG.info("Skipping - " + this.testScriptName + " Cause: " + ex.getMessage());
@@ -68,18 +67,18 @@ public class RestAPIGenericTest extends RestAPIAbstractTest {
         }
     }
 
-    private void testHttpClient_DELETE() {
-
-    }
-
-    private void testHttpClient_POST() {
-
+    private void testHttpClient_POST() throws IOException, URISyntaxException, ParseException {
+        HttpResponse httpResponse = requestPOST();
+        assertHttpResponse(httpResponse);
     }
 
     private void testHttpClient_GET() throws IOException, URISyntaxException, ParseException {
-
         HttpResponse httpResponse = requestGET();
+        assertHttpResponse(httpResponse);
 
+    }
+
+    private void assertHttpResponse(HttpResponse httpResponse) throws IOException, ParseException {
         Reporter.log("1. Availability check for REST API > " + parametrisedURL + ", HTTP Method " + methodType + ", Parameters (JSON) " + json(inputJSONFileName));
         assertNotNull(httpResponse, " no response; something went wrong, check logs");
 
@@ -88,7 +87,6 @@ public class RestAPIGenericTest extends RestAPIAbstractTest {
 
         Reporter.log("3. Validate the Response");
         assertEquals(json(httpResponse), json(expectedJSONFileName), "response content mismatch");
-
     }
 
     @AfterMethod
