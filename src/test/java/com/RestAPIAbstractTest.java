@@ -78,9 +78,7 @@ abstract class RestAPIAbstractTest extends UseAsTestName_TestBase {
         return this.methodType.equalsIgnoreCase("POST");
     }
 
-    boolean isDelete() {
-        return this.methodType.equalsIgnoreCase("DELETE");
-    }
+    //boolean isDelete() { return this.methodType.equalsIgnoreCase("DELETE"); }
 
     void executionCheck() {
         if (execute.equalsIgnoreCase("N"))
