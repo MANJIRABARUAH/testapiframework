@@ -16,6 +16,7 @@ import org.testng.SkipException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 abstract class RestAPIAbstractTest extends UseAsTestName_TestBase {
 
@@ -33,10 +34,15 @@ abstract class RestAPIAbstractTest extends UseAsTestName_TestBase {
     HttpResponse requestGET() throws IOException, URISyntaxException {
         URIBuilder builder = new URIBuilder(parametrisedURL);
         JsonMapper paramMapper = new JsonMapper(getFilePath(inputJSONFileName));
-        paramMapper.getDataMapper().forEach(builder::setParameter);
+        for (Map.Entry<String, String> entry : paramMapper.getDataMapper().entrySet()) {
+            builder.setParameter(entry.getKey(), entry.getValue());
+        }
         HttpGet getRequest = new HttpGet(builder.build());
         JsonMapper headerMapper = new JsonMapper(getFilePath(headerJSONFileName));
-        headerMapper.getDataMapper().forEach(getRequest::addHeader);
+
+        for (Map.Entry<String, String> entry : headerMapper.getDataMapper().entrySet()) {
+            getRequest.addHeader(entry.getKey(), entry.getValue());
+        }
         return httpClient.execute(getRequest);
     }
 
@@ -44,7 +50,12 @@ abstract class RestAPIAbstractTest extends UseAsTestName_TestBase {
         URIBuilder builder = new URIBuilder(parametrisedURL);
         HttpPost postRequest = new HttpPost(builder.build());
         JsonMapper headerMapper = new JsonMapper(getFilePath(headerJSONFileName));
-        headerMapper.getDataMapper().forEach(postRequest::addHeader);
+
+        for (Map.Entry<String, String> entry : headerMapper.getDataMapper().entrySet()) {
+            postRequest.addHeader(entry.getKey(), entry.getValue());
+        }
+
+
         JsonMapper dataMapper = new JsonMapper(getFilePath(inputJSONFileName));
         String jsonData = dataMapper.jsonToString();
         StringEntity jsonObj = new StringEntity(jsonData) {{

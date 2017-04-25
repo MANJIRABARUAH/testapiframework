@@ -32,9 +32,11 @@ class JsonMapper {
 
     Map<String, String> getDataMapper() {
         Map<String, String> data = new HashMap<>();
-        mapObject.forEach((key, value) -> {
-            if (value instanceof String) data.put(key, (String) value);
-        });
+        for (String key : mapObject.keySet()) {
+            if (mapObject.get(key) instanceof String) {
+                data.put(key, (String) mapObject.get(key));
+            }
+        }
         return data;
     }
 
