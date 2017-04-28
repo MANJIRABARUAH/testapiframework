@@ -48,4 +48,11 @@ class JsonMapper {
         return new String(fileData, "UTF-8");
     }
 
+
+    public static void main(String[] args) throws IOException {
+        Map<String, Object> mapObject = new ObjectMapper().readValue(new File("D:\\test.txt"), new TypeReference<Map<String, Object>>() {
+        });
+        System.out.print(mapObject);
+    }
+
 }

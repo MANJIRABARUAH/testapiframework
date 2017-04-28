@@ -1,5 +1,6 @@
 package com;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -33,9 +34,12 @@ abstract class RestAPIAbstractTest extends UseAsTestName_TestBase {
 
     HttpResponse requestGET() throws IOException, URISyntaxException {
         URIBuilder builder = new URIBuilder(parametrisedURL);
-        JsonMapper paramMapper = new JsonMapper(getFilePath(inputJSONFileName));
-        for (Map.Entry<String, String> entry : paramMapper.getDataMapper().entrySet()) {
-            builder.setParameter(entry.getKey(), entry.getValue());
+
+        if (inputJSONFileExists()) {
+            JsonMapper paramMapper = new JsonMapper(getFilePath(inputJSONFileName));
+            for (Map.Entry<String, String> entry : paramMapper.getDataMapper().entrySet()) {
+                builder.setParameter(entry.getKey(), entry.getValue());
+            }
         }
         HttpGet getRequest = new HttpGet(builder.build());
         JsonMapper headerMapper = new JsonMapper(getFilePath(headerJSONFileName));
@@ -63,6 +67,10 @@ abstract class RestAPIAbstractTest extends UseAsTestName_TestBase {
         }};
         postRequest.setEntity(jsonObj);
         return httpClient.execute(postRequest);
+    }
+
+    private boolean inputJSONFileExists() {
+        return !StringUtils.trimToEmpty(inputJSONFileName).isEmpty();
     }
 
     private String getFilePath(String inputJSONFileName) {

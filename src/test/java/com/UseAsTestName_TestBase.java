@@ -11,10 +11,11 @@ public class UseAsTestName_TestBase implements ITest {
 
     private String testInstanceName = "";
 
-    private void setTestName(String anInstanceName) {
+    void setTestName(String anInstanceName) {
         testInstanceName = "test_" + anInstanceName;
     }
 
+    @Override
     public String getTestName() {
         return testInstanceName;
     }
@@ -24,6 +25,7 @@ public class UseAsTestName_TestBase implements ITest {
         checkNotNull(method);
         checkNotNull(parameters);
         setTestName(method.getName());
+
         UseAsTestName useAsTestName = method.getAnnotation(UseAsTestName.class);
         if (useAsTestName != null) {
             if (useAsTestName.idx() > parameters.length - 1) {

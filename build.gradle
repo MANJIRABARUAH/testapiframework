@@ -6,8 +6,6 @@ version = '1.0-SNAPSHOT'
 
 description = """"""
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 
 
@@ -25,12 +23,17 @@ dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
     compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+
 }
 
 test {
     useTestNG() {
+        useDefaultListeners = true
+        outputDirectory = file("$buildDir/testngoutput")
         suites 'src/test/resources/testng.xml'
     }
+    //reports.html.enabled = false
 }
 
 
